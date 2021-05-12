@@ -2,13 +2,14 @@ import asyncio
 from asyncio import *
 from pathlib import Path
 from shlex import quote as Q
+import shutil
 
 from typing import Optional
 from subprocess import CalledProcessError
 
 async def run_subprocess(cmd: str, capture: Optional[bool], **kwargs) -> asyncio.subprocess.Process:
     dest = asyncio.subprocess.PIPE if capture else None
-    s = await create_subprocess_shell(cmd, stdout=dest, stderr=dest, cwd=__.cwd, **kwargs)
+    s = await create_subprocess_shell(cmd, stdout=dest, stderr=dest, executable=__.shell, cwd=__.cwd, **kwargs)
     await s.wait()
     if capture:
         s.stdout = (await s.stdout.read()).decode() # should we assume unicode?
@@ -32,6 +33,7 @@ from sys import argv
 from os import environ
 __.argv = argv[1:]
 __.env = environ
+__.shell = shutil.which("bash")
 __.prefix = "set -euo pipefail;"
 __.trace = True
 __.capture = False

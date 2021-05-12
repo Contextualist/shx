@@ -1,6 +1,7 @@
 from .shx import *
 from .shx import __
 __.capture = True
+__.env["BASH_ENV"] = ""
 X = SHX
 
 import pytest

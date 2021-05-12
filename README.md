@@ -33,6 +33,7 @@ import asyncio
 from asyncio import *
 from pathlib import Path
 from shlex import quote as Q
+import shutil
 ```
 
 > Note that `shx` does not perform quote escape automatically. Use function `Q` (alias of [`shlex.quote`](https://docs.python.org/3/library/shlex.html#shlex.quote)) to escape unsafe arguments.
@@ -47,6 +48,7 @@ pip install shx
 
 Settings can either be global (e.g. `__.trace = True`)  or per-command (e.g. `await $("echo 42", trace=True)`):
 
+* `shell` (Default: `$(which bash)`): Shell to be used.
 * `prefix` (Default: `set -euo pipefail;`): String to be prepended to a command.
 * `trace` (Default: `True`): Display command if set to True. Same as `set -x` in bash.
 * `capture` (Default: `False`): If set to True, capture stdout and stderr instead of displaying them. The captured strings will replace the `.stdout` and `.stderr` attributes of the `asyncio.subprocess.Process` instance returned.
