@@ -1,21 +1,22 @@
 from .shx import *
 from .shx import __
-__.capture = True
-__.env["BASH_ENV"] = ""
 X = SHX
 
 import pytest
 pytestmark = pytest.mark.asyncio
 
 async def test_capture():
+    __.capture = True
     hello = (await X("echo Error >&2; echo Hello")).stderr.strip()
     assert int((await X(f"echo {hello} | wc -c")).stdout) == 6
 
 async def test_env():
+    __.capture = True
     __.env["FOO"] = "foo"
     assert (await X("echo $FOO")).stdout == "foo\n"
 
 async def test_quote():
+    __.capture = True
     greeting = '"quota\'" & pwd'
     assert (await X(f"echo {Q(greeting)}")).stdout == f"{greeting}\n"
     foo = "hi; ls"
@@ -39,5 +40,5 @@ async def test_context():
         __.trace = True
         cd("a")
         assert __.cwd == Path("/tmp/a") and __.trace is True
-    await create_task(_inner())
+    await ensure_future(_inner())
     assert __.cwd == Path("/tmp") and __.trace is False
