@@ -46,7 +46,7 @@ pip install shx
 
 ## Settings and utility functions
 
-Settings can either be global (e.g. `__.trace = True`)  or per-command (e.g. `await $("echo 42", trace=True)`):
+Settings can either be [task local](contextvars.md) (e.g. `__.trace = True`) or per-command (e.g. `await $("echo 42", trace=True)`):
 
 * `shell` (Default: `$(which bash)`): Shell to be used.
 * `prefix` (Default: `set -euo pipefail;`): String to be prepended to a command.
@@ -60,7 +60,7 @@ Attributes:
 
 ### `cd(cwd: str)`
 
-Change working directory to `cwd`.
+Change working directory to `cwd`. Same as the task local settings, the changes are only effective within the current task.
 
 ### `question(prompt: str)`
 

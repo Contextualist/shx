@@ -13,7 +13,9 @@ setuptools.setup(
     url="https://github.com/Contextualist/shx",
     packages=setuptools.find_packages(),
     python_requires=">=3.6",
-    install_requires=[],
+    install_requires=[
+        "aiocontextvars>=0.2.2; python_version < '3.7'",
+    ],
     tests_require = [
         "pytest",
         "pytest-asyncio",

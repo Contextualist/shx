@@ -31,3 +31,13 @@ async def test_exception():
     except CalledProcessError as e:
         p = e
     assert p.returncode == 1
+
+async def test_context():
+    __.trace = False
+    cd("/tmp")
+    async def _inner():
+        __.trace = True
+        cd("a")
+        assert __.cwd == Path("/tmp/a") and __.trace is True
+    await create_task(_inner())
+    assert __.cwd == Path("/tmp") and __.trace is False

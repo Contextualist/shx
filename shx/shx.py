@@ -27,17 +27,34 @@ def SHX(cmd: str, prefix=None, trace=None, capture=None, **kwargs):
     cmd = _deft(prefix, __.prefix) + cmd
     return run_subprocess(cmd, _deft(capture, __.capture), **kwargs)
 
-def __():
-    pass
+try:
+    from aiocontextvars import ContextVar
+except ModuleNotFoundError:
+    from contextvars import ContextVar
 from sys import argv
 from os import environ
-__.argv = argv[1:]
-__.env = environ
-__.shell = shutil.which("bash")
-__.prefix = "set -euo pipefail;"
-__.trace = True
-__.capture = False
-__.cwd = None
+class ROVar:
+    def __init__(self, name, default):
+        self.k, self.v = name, default
+    def set(self, v):
+        raise TypeError(f"{self.k} is immutable")
+    def get(self):
+        return self.v
+_CVAR = dict(
+    argv    =      ROVar("argv",    default=argv[1:]),
+    env     =      ROVar("env",     default=environ),
+    shell   = ContextVar("shell",   default=shutil.which("bash")),
+    prefix  = ContextVar("prefix",  default="set -euo pipefail;"),
+    trace   = ContextVar("trace",   default=True),
+    capture = ContextVar("capture", default=False),
+    cwd     = ContextVar("cwd",     default=None),
+)
+class CVar:
+    def __getattr__(self, k):
+        return _CVAR[k].get()
+    def __setattr__(self, k, v):
+        _CVAR[k].set(v)
+__ = CVar()
 
 def question(s="Proceed (Enter) or abort (^C)?"):
     try:
