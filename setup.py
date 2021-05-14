@@ -7,7 +7,7 @@ setuptools.setup(
     name="shx",
     version="0.1.0",
     author="Contextualist",
-    description="For writing script with Python",
+    description="For writing async script with Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Contextualist/shx",
@@ -22,7 +22,7 @@ setuptools.setup(
         "console_scripts": ["shx=shx.shx:main"],
     },
     classifiers=[
-        "Development Status :: 3 - Beta",
+        "Development Status :: 4 - Beta",
         "Framework :: AsyncIO",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3 :: Only",
