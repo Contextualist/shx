@@ -11,18 +11,18 @@ async def test_capture():
     assert int((await X(f"echo {hello} | wc -c")).stdout) == 6
 
 async def test_env():
-    __.capture = True
+    __.capture = 'o'
     __.env["FOO"] = "foo"
-    assert (await X("echo $FOO")).stdout == "foo\n"
+    assert await X("echo $FOO") == "foo\n"
 
 async def test_quote():
-    __.capture = True
+    __.capture = 'o'
     greeting = '"quota\'" & pwd'
-    assert (await X(f"echo {Q(greeting)}")).stdout == f"{greeting}\n"
+    assert await X(f"echo {Q(greeting)}") == f"{greeting}\n"
     foo = "hi; ls"
-    assert int((await X(f"echo {Q(foo)} | wc -l")).stdout) == 1
+    assert int(await X(f"echo {Q(foo)} | wc -l")) == 1
     bar = 'bar"";baz!$#^$\'&*~*%)({}||\\/'
-    assert (await X(f"echo {Q(bar)}")).stdout.strip() == bar
+    assert (await X(f"echo {Q(bar)}")).strip() == bar
     __.env["FOO"] = "hi; exit 1"
     await X("echo $FOO")
 

@@ -9,7 +9,7 @@
 
 await $"cat setup.py | grep name"
 
-branch = (await $("git branch --show-current", capture=True)).stdout
+branch = await $("git branch --show-current", capture='o')
 await $f"dep deploy --branch={branch}"
 
 await gather(
@@ -24,7 +24,7 @@ await $f"mkdir /tmp/{Q(name)}"
 
 `shx` makes your script writing experience better by taking the advantages of Python's sugary syntax, AsyncIO, and the extensive Python ecosystem. `shx` does three things:
 
-1. Wrap `asyncio.create_subprocess_shell` around with a [syntax sugar](#about-the-subprocess-syntax). `$"command"` returns an [`asyncio.subprocess.Process`](https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.asyncio.subprocess.Process) instance; on non-zero return code, raise [`subprocess.CalledProcessError`](https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError).
+1. Wrap `asyncio.create_subprocess_shell` around with a [syntax sugar](#about-the-subprocess-syntax). `await $"command"` returns an [`asyncio.subprocess.Process`](https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.asyncio.subprocess.Process) instance; on non-zero return code, raise [`subprocess.CalledProcessError`](https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError).
 2. Provide a top-level async environment.
 3. Preload commonly used imports and utilities. Currently, the imports are:
 
@@ -51,12 +51,12 @@ Settings can either be [task local](contextvars.md) (e.g. `__.trace = True`) or 
 * `shell` (Default: `$(which bash)`): Shell to be used.
 * `prefix` (Default: `set -euo pipefail;`): String to be prepended to a command.
 * `trace` (Default: `True`): Display command if set to True. Same as `set -x` in bash.
-* `capture` (Default: `False`): If set to True, capture stdout and stderr instead of displaying them. The captured strings will replace the `.stdout` and `.stderr` attributes of the `asyncio.subprocess.Process` instance returned.
+* `capture` (Default: `False`): If set to True, capture stdout and stderr instead of displaying them. The captured strings will replace the `.stdout` and `.stderr` attributes of the `asyncio.subprocess.Process` instance returned. `await $("...", capture='o')` and `await $("...", capture='e')` are the aliases of `(await $("...", capture=True)).stdout` and `(await $("...", capture=True)).stderr`, respectively.
 
 Attributes:
 
-* `__.argv`: a list of command line arguments
-* `__.env`: a dict of environment variables
+* `__.argv`: alias of `sys.argv`, a list of command line arguments
+* `__.env`: alias of `os.environ`, a dict of environment variables
 
 ### `cd(cwd: str)`
 

@@ -4,10 +4,10 @@ from pathlib import Path
 from shlex import quote as Q
 import shutil
 
-from typing import Optional
+from typing import Union
 from subprocess import CalledProcessError
 
-async def run_subprocess(cmd: str, capture: Optional[bool], **kwargs) -> asyncio.subprocess.Process:
+async def run_subprocess(cmd: str, capture: Union[bool, str, None], **kwargs) -> Union[asyncio.subprocess.Process, str]:
     dest = asyncio.subprocess.PIPE if capture else None
     s = await create_subprocess_shell(cmd, stdout=dest, stderr=dest, executable=__.shell, cwd=__.cwd, **kwargs)
     await s.wait()
@@ -16,6 +16,10 @@ async def run_subprocess(cmd: str, capture: Optional[bool], **kwargs) -> asyncio
         s.stderr = (await s.stderr.read()).decode()
     if s.returncode:
         raise CalledProcessError(s.returncode, cmd, s.stdout, s.stderr)
+    if capture == 'o':
+        return s.stdout
+    elif capture == 'e':
+        return s.stderr
     return s
 
 def _deft(l, g):
