@@ -22,6 +22,8 @@ name = "foo bar"
 await $f"mkdir /tmp/{Q(name)}"
 ```
 
+(Take a look at [more examples](examples.md).)
+
 `shx` makes your script writing experience better by taking the advantages of Python's sugary syntax, AsyncIO, and the extensive Python ecosystem. `shx` does three things:
 
 1. Wrap `asyncio.create_subprocess_shell` around with a [syntax sugar](#about-the-subprocess-syntax). `await $"command"` returns an [`asyncio.subprocess.Process`](https://docs.python.org/3/library/asyncio-subprocess.html#asyncio.asyncio.subprocess.Process) instance; on non-zero return code, raise [`subprocess.CalledProcessError`](https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError).
