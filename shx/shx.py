@@ -96,15 +96,30 @@ def _cmdstmt(s: str) -> str:
         result.append((toknum, tokval))
     return untokenize(result).decode('utf-8')
 
+def normalize_traceback(tb, scrname):
+    import types
+    if tb is None:
+        return
+    lineno = tb.tb_lineno - (tb.tb_frame.f_code.co_filename == scrname)
+    return types.TracebackType(normalize_traceback(tb.tb_next, scrname), tb.tb_frame, tb.tb_lasti, lineno)
+
 def main():
-    snippet = Path(argv[1]).read_text()
+    scrname = argv[1]
+    snippet = Path(scrname).read_text()
     snippet = _cmdstmt(snippet)
     async def amain(snippet):
-        exec(
-            'async def __ex(): ' +
-            ''.join(f'\n {l}' for l in snippet.split('\n'))
-        )
-        await locals()['__ex']()
-    run(amain(snippet))
+        exec(compile(
+            'async def __shx_main(): ' + ''.join(f'\n {l}' for l in snippet.split('\n')),
+            scrname, 'exec'))
+        await locals()['__shx_main']()
+    try:
+        run(amain(snippet))
+    except Exception:
+        import sys
+        import traceback
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        exc_traceback = exc_traceback.tb_next.tb_next.tb_next.tb_next
+        exc_traceback = normalize_traceback(exc_traceback, scrname)
+        traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stderr)
 if __name__ == "__main__":
     main()
