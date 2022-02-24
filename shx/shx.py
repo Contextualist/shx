@@ -96,30 +96,38 @@ def _cmdstmt(s: str) -> str:
         result.append((toknum, tokval))
     return untokenize(result).decode('utf-8')
 
-def normalize_traceback(tb, scrname):
+def normalize_traceback(tb, srcname):
     import types
     if tb is None:
         return
-    lineno = tb.tb_lineno - (tb.tb_frame.f_code.co_filename == scrname)
-    return types.TracebackType(normalize_traceback(tb.tb_next, scrname), tb.tb_frame, tb.tb_lasti, lineno)
+    lineno = tb.tb_lineno - (tb.tb_frame.f_code.co_filename == srcname)
+    return types.TracebackType(normalize_traceback(tb.tb_next, srcname), tb.tb_frame, tb.tb_lasti, lineno)
 
 def main():
-    scrname = argv[1]
-    snippet = Path(scrname).read_text()
+    import sys
+    import ast
+    import types
+    srcname = argv[1]
+    snippet = Path(srcname).read_text()
     snippet = _cmdstmt(snippet)
-    async def amain(snippet):
-        exec(compile(
-            'async def __shx_main(): ' + ''.join(f'\n {l}' for l in snippet.split('\n')),
-            scrname, 'exec'))
-        await locals()['__shx_main']()
+    if sys.version_info < (3, 8):
+        async def amain(snippet):
+            exec(compile(
+                'async def __shx_main(): ' + ''.join(f'\n {l}' for l in snippet.split('\n')),
+                srcname, 'exec'))
+            await locals()['__shx_main']()
+    else:
+        async def amain(snippet):
+            co = compile(snippet, srcname, 'exec', flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+            await types.FunctionType(co, globals())()
     try:
         run(amain(snippet))
     except Exception:
-        import sys
         import traceback
         exc_type, exc_value, exc_traceback = sys.exc_info()
         exc_traceback = exc_traceback.tb_next.tb_next.tb_next.tb_next
-        exc_traceback = normalize_traceback(exc_traceback, scrname)
+        if sys.version_info < (3, 8):
+            exc_traceback = normalize_traceback(exc_traceback, srcname)
         traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stderr)
 if __name__ == "__main__":
     main()
