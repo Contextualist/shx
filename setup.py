@@ -5,17 +5,15 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="shx",
-    version="0.3.0",
+    version="0.4.0",
     author="Contextualist",
     description="For writing async script with Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Contextualist/shx",
     packages=setuptools.find_packages(),
-    python_requires=">=3.6",
-    install_requires=[
-        "aiocontextvars>=0.2.2; python_version < '3.7'",
-    ],
+    python_requires=">=3.7",
+    install_requires=[],
     tests_require = [
         "pytest",
         "pytest-asyncio",
@@ -28,10 +26,10 @@ setuptools.setup(
         "Framework :: AsyncIO",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: System :: Shells",
         "Topic :: Utilities",
     ],

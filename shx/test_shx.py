@@ -40,5 +40,5 @@ async def test_context():
         __.trace = True
         cd("a")
         assert __.cwd == Path("/tmp/a") and __.trace is True
-    await ensure_future(_inner())
+    await create_task(_inner())
     assert __.cwd == Path("/tmp") and __.trace is False

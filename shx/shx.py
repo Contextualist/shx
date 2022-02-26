@@ -31,10 +31,7 @@ def SHX(cmd: str, prefix=None, trace=None, capture=None, **kwargs):
     cmd = _deft(prefix, __.prefix) + cmd
     return run_subprocess(cmd, _deft(capture, __.capture), **kwargs)
 
-try:
-    from aiocontextvars import ContextVar
-except ModuleNotFoundError:
-    from contextvars import ContextVar
+from contextvars import ContextVar
 from sys import argv
 from os import environ
 class ROVar:
