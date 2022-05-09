@@ -16,7 +16,7 @@ setuptools.setup(
     install_requires=[],
     tests_require = [
         "pytest",
-        "pytest-asyncio",
+        "pytest-asyncio >= 0.17",
     ],
     entry_points = {
         "console_scripts": ["shx=shx.shx:main"],

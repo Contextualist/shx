@@ -34,6 +34,7 @@ def SHX(cmd: str, prefix=None, trace=None, capture=None, **kwargs):
 from contextvars import ContextVar
 from sys import argv
 from os import environ
+srcname, argv = argv[0], argv[1:]
 class ROVar:
     def __init__(self, name, default):
         self.k, self.v = name, default
@@ -42,7 +43,7 @@ class ROVar:
     def get(self):
         return self.v
 _CVAR = dict(
-    argv    =      ROVar("argv",    default=argv[1:]),
+    argv    =      ROVar("argv",    default=argv),
     env     =      ROVar("env",     default=environ),
     shell   = ContextVar("shell",   default=shutil.which("bash")),
     prefix  = ContextVar("prefix",  default="set -euo pipefail;"),
@@ -56,6 +57,7 @@ class CVar:
     def __setattr__(self, k, v):
         _CVAR[k].set(v)
 __ = CVar()
+del ContextVar, ROVar, CVar, argv, environ
 
 def question(s="Proceed (Enter) or abort (^C)?"):
     try:
@@ -100,11 +102,10 @@ def normalize_traceback(tb, srcname):
     lineno = tb.tb_lineno - (tb.tb_frame.f_code.co_filename == srcname)
     return types.TracebackType(normalize_traceback(tb.tb_next, srcname), tb.tb_frame, tb.tb_lasti, lineno)
 
-def main():
+def main(srcname):
     import sys
     import ast
     import types
-    srcname = argv[1]
     snippet = Path(srcname).read_text()
     snippet = _cmdstmt(snippet)
     if sys.version_info < (3, 8):
@@ -127,4 +128,4 @@ def main():
             exc_traceback = normalize_traceback(exc_traceback, srcname)
         traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stderr)
 if __name__ == "__main__":
-    main()
+    main(srcname)

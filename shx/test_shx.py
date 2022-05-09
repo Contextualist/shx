@@ -2,9 +2,6 @@ from .shx import *
 from .shx import __
 X = SHX
 
-import pytest
-pytestmark = pytest.mark.asyncio
-
 async def test_capture():
     __.capture = True
     hello = (await X("echo Error >&2; echo Hello")).stderr.strip()
@@ -42,3 +39,7 @@ async def test_context():
         assert __.cwd == Path("/tmp/a") and __.trace is True
     await create_task(_inner())
     assert __.cwd == Path("/tmp") and __.trace is False
+
+async def test_integration():
+    snippet = 'await sleep(0); await $"sleep 0"'
+    await X(f"python -m shx <(echo {Q(snippet)})")
