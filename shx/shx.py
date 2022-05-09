@@ -102,7 +102,7 @@ def normalize_traceback(tb, srcname):
     lineno = tb.tb_lineno - (tb.tb_frame.f_code.co_filename == srcname)
     return types.TracebackType(normalize_traceback(tb.tb_next, srcname), tb.tb_frame, tb.tb_lasti, lineno)
 
-def main(srcname):
+def main():
     import sys
     import ast
     import types
@@ -128,4 +128,4 @@ def main(srcname):
             exc_traceback = normalize_traceback(exc_traceback, srcname)
         traceback.print_exception(exc_type, exc_value, exc_traceback, file=sys.stderr)
 if __name__ == "__main__":
-    main(srcname)
+    main()

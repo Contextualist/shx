@@ -42,4 +42,4 @@ async def test_context():
 
 async def test_integration():
     snippet = 'await sleep(0); await $"sleep 0"'
-    await X(f"python -m shx <(echo {Q(snippet)})")
+    await X(f"shx <(echo {Q(snippet)})")
