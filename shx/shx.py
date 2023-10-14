@@ -75,23 +75,31 @@ def cd(cwd: str):
 
 def _cmdstmt(s: str) -> str:
     from tokenize import tokenize, untokenize, ERRORTOKEN, STRING, NAME, OP
+    try:
+        from tokenize import FSTRING_START, FSTRING_END  # Python 3.12+
+    except ImportError:
+        FSTRING_START, FSTRING_END = -1, -1
     from io import BytesIO
     result = []
     g = tokenize(BytesIO(s.encode('utf-8')).readline)  # tokenize the string
     post_et = False
     for toknum, tokval, _, _, _ in g:
-        if toknum == ERRORTOKEN and tokval == '$':
+        if (toknum==ERRORTOKEN or toknum==OP) and tokval == '$':
             post_et = True
             toknum, tokval = NAME, 'SHX'
         elif post_et:
-            post_et = False
             if toknum == STRING:
                 result.extend([(OP, '('), (STRING, tokval), (OP, ')')])
+                post_et = False
+                continue
+            elif toknum == FSTRING_START:
+                result.append((OP, '('))
+            elif toknum == FSTRING_END:
+                result.extend([(FSTRING_END, tokval), (OP, ')')])
+                post_et = False
                 continue
             elif toknum == OP and tokval == '(':
-                pass
-            else:
-                raise SyntaxError("'$' should be followed by a str or '('")
+                post_et = False
         result.append((toknum, tokval))
     return untokenize(result).decode('utf-8')
 
