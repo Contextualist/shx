@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="shx",
-    version="0.4.1",
+    version="0.4.2",
     author="Contextualist",
     description="For writing async script with Python",
     long_description=long_description,

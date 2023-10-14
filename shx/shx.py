@@ -34,7 +34,7 @@ def SHX(cmd: str, prefix=None, trace=None, capture=None, **kwargs):
 from contextvars import ContextVar
 from sys import argv
 from os import environ
-srcname, argv = argv[0], argv[1:]
+srcname, argv = argv[1], argv[2:]
 class ROVar:
     def __init__(self, name, default):
         self.k, self.v = name, default
