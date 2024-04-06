@@ -107,6 +107,7 @@ def main():
     import sys
     import ast
     import types
+    sys.path.append(str(Path(srcname).resolve().parent))
     snippet = Path(srcname).read_text()
     snippet = _cmdstmt(snippet)
 
